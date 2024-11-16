@@ -13,7 +13,7 @@ A real-time chat application built using the MERN (MongoDB, Express.js, React, N
 - **Presence Tracking**: Online/offline presence indicator for contacts.
 - **Responsive Chat Layout**: Messages displayed on different sides for sender and receiver.
 - **Forgot Password**: Password recovery using Nodemailer for email-based reset links.
-- **UI**: Clean, responsive design using Material UI and Tailwind CSS.
+- **UI**: Clean, responsive design using Material tailwind and Tailwind CSS.
 - **Enhanced Security**: Token-based authentication without cookies.
 - **Dynamic Routing**: User-specific chat history fetched using `userId` and `recipientId` URL parameters. 
 
@@ -25,7 +25,7 @@ A real-time chat application built using the MERN (MongoDB, Express.js, React, N
 ### Frontend
 - **React.js**: Component-based UI development.
 - **Socket.IO-Client**: Real-time bidirectional communication for the chat functionality.
-- **Material UI**: UI components for consistent and professional design.
+- **Material Tailwind **: UI components for consistent and professional design.
 - **Tailwind CSS**: Utility-first CSS framework for responsive design.
 
 ### Backend
