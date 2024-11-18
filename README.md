@@ -1,7 +1,7 @@
 # Chat Application
 https://github.com/user-attachments/assets/33cc0dda-6f21-4064-a728-1b07bcc95ce4
 
-A real-time chat application built using the MERN (MongoDB, Express.js, React, Node.js) stack with Socket.IO for real-time messaging, authentication with JWT, and additional features like QR code contact addition. This project serves as a full-stack implementation of a chat app with individual messaging functionalities.
+A real-time chat application built using the MERN (MongoDB, Express.js, React, Node.js) stack with Socket.IO for real-time messaging, authentication with JWT, and additional features like QR code contact addition and ai bit using using llama api. This project serves as a full-stack implementation of a chat app with individual messaging functionalities.
 
 ## Features
 
