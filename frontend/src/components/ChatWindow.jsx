@@ -4,6 +4,7 @@ import { Send,ArrowLeft } from 'lucide-react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import{Typography,Input} from '@material-tailwind/react';
+import forge from 'node-forge';
 
 const ChatWindow = ({ isDarkMode, userId, recipientId ,recipientName }) => {
   
@@ -12,7 +13,28 @@ const ChatWindow = ({ isDarkMode, userId, recipientId ,recipientName }) => {
   const [recipientOnline,setRecipientOnline] =useState('');
   const messageEndRef = useRef(null);
   const socket = useRef(null);
-  
+  const [serverPublicKey, setServerPublicKey] = useState(null);
+
+  useEffect(() => {
+    fetchServerPublicKey();
+  }, []);
+
+  const fetchServerPublicKey = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/public-key');
+      const publicKey = forge.pki.publicKeyFromPem(response.data.publicKey);
+      setServerPublicKey(publicKey);
+    } catch (error) {
+      console.error('Failed to fetch server public key:', error);
+    }
+  };
+
+  const encrypt = (data, publicKey) => {
+    const encrypted = publicKey.encrypt(forge.util.encodeUtf8(data), 'RSA-OAEP');
+    return forge.util.encode64(encrypted);
+  };
+
+
   // Initialize Socket.IO connection
   
   useEffect(() => {
@@ -41,12 +63,8 @@ const ChatWindow = ({ isDarkMode, userId, recipientId ,recipientName }) => {
 
     });
       
-          
-        
-          
-      
 
-      
+ 
 
     
     // Private message handler
@@ -56,19 +74,6 @@ const ChatWindow = ({ isDarkMode, userId, recipientId ,recipientName }) => {
         ...prevMessages,
         { text: message, sender: senderId, timestamp: new Date().toISOString() },
       ]);
-    
-          // Trigger push notification for the recipient (if subscribed)
-          if (senderId !== userId) {
-            const notificationTitle = 'New Message';
-            const notificationBody = `You received a new message from ${senderId}: "${message}"`;
-            // Emit the notification event to the client
-            socket.current.emit('newMessage', { userId: recipientId, notificationTitle, notificationBody });
-          }
-        
-      
-    
-    
-    
     
     }
     };
@@ -123,7 +128,7 @@ const ChatWindow = ({ isDarkMode, userId, recipientId ,recipientName }) => {
     return `${day}/${month} ${time}`;
   };
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (newMessage.trim()) {
       const newMsg = {
@@ -134,13 +139,14 @@ const ChatWindow = ({ isDarkMode, userId, recipientId ,recipientName }) => {
       };
       setMessages((prevMessages) => [...prevMessages, newMsg]);
       setNewMessage('');
-  
-       
+    
       // Emit the private message via Socket.IO
        
       if(socket.current && socket.current.connected){
         console.log("Emitting the event");
-      socket.current.emit('privateMessage', { recipientId, message: newMessage, userId });}
+        const encryptedMessage = encrypt(newMessage, serverPublicKey);
+        console.log(encryptedMessage);
+      socket.current.emit('privateMessage', { recipientId, message: encryptedMessage, userId });}
           else{
             console.log("Socket is not connected");
           }
