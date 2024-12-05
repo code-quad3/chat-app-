@@ -16,7 +16,7 @@ A real-time chat application built using the MERN (MongoDB, Express.js, React, N
 - **UI**: Clean, responsive design using Material tailwind and Tailwind CSS.
 - **Enhanced Security**: Token-based authentication without cookies.
 - **Dynamic Routing**: User-specific chat history fetched using `userId` and `recipientId` URL parameters. 
-
+- **End-to-End Encryption**: Used Rsa to encrpyt and decrypt messages using node-forge
 
 
 
@@ -25,7 +25,7 @@ A real-time chat application built using the MERN (MongoDB, Express.js, React, N
 ### Frontend
 - **React.js**: Component-based UI development.
 - **Socket.IO-Client**: Real-time bidirectional communication for the chat functionality.
-- **Material Tailwind **: UI components for consistent and professional design.
+- **Material Tailwind**: UI components for consistent and professional design.
 - **Tailwind CSS**: Utility-first CSS framework for responsive design.
 
 ### Backend
@@ -46,6 +46,7 @@ A real-time chat application built using the MERN (MongoDB, Express.js, React, N
 - **Zod**: Schema-based validation for form data.
 - **QR Code Generator**: QR code generation for adding contacts.
 - **React-rouer**: for dynamic routing.
+- **node-forge**: for performing cryptographic operations
 ## Getting Started
 
 
