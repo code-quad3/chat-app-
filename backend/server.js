@@ -11,6 +11,42 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const cors = require("cors");
 const _ = require("lodash");
+
+
+
+const forge = require('node-forge');
+// Generate RSA key pair
+const { privateKey, publicKey } = forge.pki.rsa.generateKeyPair(2048);
+
+// Convert public key to PEM format
+const publicKeyPem = forge.pki.publicKeyToPem(publicKey);
+
+// Encryption function
+function encrypt(data, publicKey) {
+  const encrypted = publicKey.encrypt(forge.util.encodeUtf8(data), 'RSA-OAEP');
+  return forge.util.encode64(encrypted);
+}
+
+// Decryption function
+function decrypt(encryptedData, privateKey) {
+  const decoded = forge.util.decode64(encryptedData);
+  const decrypted = privateKey.decrypt(decoded, 'RSA-OAEP');
+  return forge.util.decodeUtf8(decrypted);
+}
+
+
+
+const x ="hello";
+console.log(encrypt(x,publicKey));
+
+
+
+
+
+
+
+
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(passport.initialize());
@@ -28,10 +64,19 @@ const messageRoute = require("./routes/messageRoute");
 const aiChatRoute = require("./routes/aiChatRoute");
 const { mongoose } = require("mongoose");
 
+
 app.use("/auth", personAuthroutes);
 app.use("/user", userRoutes);
 app.use("/chat", messageRoute);
 app.use("/ai-chat", aiChatRoute);
+
+
+// API route to get the server's public key
+app.get('/public-key', (req, res) => {
+  res.json({ publicKey: publicKeyPem });
+});
+
+
 
 let onlineUsers = new Map(); // Store online users and their socket IDs
 
@@ -52,18 +97,22 @@ io.on("connection", (socket) => {
   });
 
   socket.on("privateMessage", async ({ recipientId, message, userId }) => {
-    try {
+    try {                     
+                                        
+      const decryptedMsg = decrypt(message,privateKey);
+      //console.log("the decrypt",decryptedMsg);
+     
       recipientId = new mongoose.Types.ObjectId(recipientId);
       userId = new mongoose.Types.ObjectId(userId);
-      const newMessage = new Message({
+     const newMessage = new Message({
         room: null,
         sender: userId,
         receiver: recipientId,
-        content: message,
+        content: decryptedMsg,
         type: "private",
       });
-
-      await newMessage.save();
+console.log(newMessage);
+      //await newMessage.save();
       recipientId = _.toString(recipientId);
       userId = _.toString(userId);
 
@@ -99,3 +148,4 @@ io.on("connection", (socket) => {
 server.listen(4000, () => {
   console.log("Listening on port 4000");
 });
+
